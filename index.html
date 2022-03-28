@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+		</style>
+	</head>
+	<body>
+        <script src="three.js"></script>
+        <script src="OrbitControls.js"></script>
+        <script>
+                const scene = new THREE.Scene();
+
+                const camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+                const renderer = new THREE.WebGLRenderer();
+                renderer.setSize( window.innerWidth, window.innerHeight );
+                document.body.appendChild( renderer.domElement );
+
+
+                const controls = new THREE.OrbitControls(camera, renderer.domElement);
+                camera.position.set( 0, 0, 0 );
+
+                const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+                const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+                const cube = new THREE.Mesh( geometry, material );
+                scene.add( cube );
+
+                camera.position.z = 5;
+                createSky();
+                createLights();
+                controls.update();
+                setupEvents();
+
+                function setupEvents() {
+                    window.addEventListener('resize', () => {
+                        camera.aspect = window.innerWidth / window.innerHeight;
+                        camera.updateProjectionMatrix();
+                        renderer.setSize(window.innerWidth, window.innerHeight);
+                    });
+
+                }
+
+                function createSky(){
+                    var geometry = new THREE.SphereGeometry(10, 32, 32);
+                    var material = new THREE.MeshStandardMaterial({
+                        map: new THREE.TextureLoader().load('2k_stars_milky_way.jpg'),
+                        side: THREE.DoubleSide
+                    });
+                    skysphere = new THREE.Mesh(geometry, material);
+                    scene.add(skysphere);
+                }
+
+                function createLights() {
+                    scene.add(new THREE.AmbientLight(0xffffff));
+                }
+
+                function animate() {
+	                requestAnimationFrame( animate );
+                    cube.rotation.x += 0.01;
+                    cube.rotation.y += 0.01;
+                    controls.update();
+                    renderer.render( scene, camera );
+                }
+                animate();
+            
+        </script> 
+    
+
+    </body>
+</html>
