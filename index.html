@@ -24,9 +24,15 @@
                 camera.position.set( 0, 0, 0 );
 
                 const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-                const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+                const material = new THREE.MeshStandardMaterial( {color: 0x00ff00} );
                 const cube = new THREE.Mesh( geometry, material );
+                cube.position.z = 2;
                 scene.add( cube );
+
+                const geometry2 = new THREE.BoxGeometry( 1, 1, 1 );
+                const material2 = new THREE.MeshStandardMaterial( {color: 0xff0000} );
+                const cube2 = new THREE.Mesh( geometry2, material2 );
+                scene.add( cube2 );
 
                 camera.position.z = 5;
                 createSky();
@@ -44,7 +50,7 @@
                 }
 
                 function createSky(){
-                    var geometry = new THREE.SphereGeometry(10, 32, 32);
+                    var geometry = new THREE.SphereGeometry(100, 32, 32);
                     var material = new THREE.MeshStandardMaterial({
                         map: new THREE.TextureLoader().load('2k_stars_milky_way.jpg'),
                         side: THREE.DoubleSide
@@ -54,7 +60,26 @@
                 }
 
                 function createLights() {
-                    scene.add(new THREE.AmbientLight(0xffffff));
+                    var sunLight = new THREE.PointLight(0xffffff, 2, 3000, 1);
+                    var xyz = [10,0,10];
+                    sunLight.position.set(xyz[0], xyz[1], xyz[2]);
+                    const geometry2 = new THREE.BoxGeometry( 1, 1, 1 );
+                    const material2 = new THREE.MeshBasicMaterial( {color: 0x0000ff} );
+                    const cube2 = new THREE.Mesh( geometry2, material2 );
+                    cube2.position.set(xyz[0], xyz[1], xyz[2]);
+                    scene.add( cube2 );
+
+
+                    scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+
+                    scene.add(sunLight);
+
+                    sunLight.castShadow = true;
+                    sunLight.shadow.mapSize.width = 1024;
+                    sunLight.shadow.mapSize.height = 1024;
+                    sunLight.shadow.camera.near = camera.near;
+                    sunLight.shadow.camera.far = camera.far;
+
                 }
 
                 function animate() {
