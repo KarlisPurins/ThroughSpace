@@ -21,22 +21,24 @@
 
 
                 const controls = new THREE.OrbitControls(camera, renderer.domElement);
-                camera.position.set( 0, 0, 0 );
+                camera.position.set(0,5,5);
 
-                const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-                const material = new THREE.MeshStandardMaterial( {color: 0x00ff00} );
-                const cube = new THREE.Mesh( geometry, material );
-                cube.position.z = 2;
-                scene.add( cube );
 
                 const geometry2 = new THREE.BoxGeometry( 1, 1, 1 );
                 const material2 = new THREE.MeshStandardMaterial( {color: 0xff0000} );
                 const cube2 = new THREE.Mesh( geometry2, material2 );
                 scene.add( cube2 );
 
-                camera.position.z = 5;
-                createSky();
-                createLights();
+                const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+                const material = new THREE.MeshStandardMaterial( {color: 0xff00ff} );
+                const cube = new THREE.Mesh( geometry, material );
+                scene.add( cube );
+
+                
+                var spaceSize = 200;
+                createSky(spaceSize);
+                createLights(spaceSize);
+                createPlanets(spaceSize*0.7);
                 controls.update();
                 setupEvents();
 
@@ -49,8 +51,8 @@
 
                 }
 
-                function createSky(){
-                    var geometry = new THREE.SphereGeometry(100, 32, 32);
+                function createSky(spaceSize){
+                    var geometry = new THREE.SphereGeometry(spaceSize, 32, 32);
                     var material = new THREE.MeshStandardMaterial({
                         map: new THREE.TextureLoader().load('2k_stars_milky_way.jpg'),
                         side: THREE.DoubleSide
@@ -59,26 +61,26 @@
                     scene.add(skysphere);
                 }
 
-                function createLights() {
-                    createStars();
+                function createLights(spaceSize) {
+                    createStars(spaceSize*0.7);
                     scene.add(new THREE.AmbientLight(0xffffff, 0.3));
 
                 }
 
-                function createStars(){
-                    for (let i = 0; i < 50; i++) {
+                function createStars(spaceSize){
+                    for (let i = 0; i < 60; i++) {
                         if(i%4 == 0){
-                            createStar(getRandomInt(-100),getRandomInt(-100),getRandomInt(100));
+                            createStar(getRandomInt(-spaceSize),getRandomInt(spaceSize),getRandomInt(spaceSize));
                         }
                         else if(i%3 == 0){
-                            createStar(getRandomInt(100),getRandomInt(100),getRandomInt(-100));
+                            createStar(getRandomInt(spaceSize),getRandomInt(-spaceSize),getRandomInt(spaceSize));
 
                         }
                         else if(i%2 == 0){
-                            createStar(getRandomInt(100),getRandomInt(100),getRandomInt(100));
+                            createStar(getRandomInt(spaceSize),getRandomInt(spaceSize),getRandomInt(-spaceSize));
 
                         }else{
-                            createStar(getRandomInt(-100),getRandomInt(-100),getRandomInt(-100));
+                            createStar(getRandomInt(-spaceSize),getRandomInt(-spaceSize),getRandomInt(-spaceSize));
                         }
                     }
                 }
@@ -86,11 +88,11 @@
                 function createStar(x, y, z){
                     var sunLight = new THREE.PointLight(0xffffff, 1, 100, 1);
                     sunLight.position.set(x, y, z);
-                    var geometry = new THREE.SphereGeometry(1, 32, 32);
+                    var geometry = new THREE.SphereGeometry(getRandomInt(4), 32, 32);
                     var material = new THREE.MeshStandardMaterial({
                         map: new THREE.TextureLoader().load('sun_texture.png'),
                         emissive: 0xff8000,
-                        emissiveIntensity: 0.4,
+                        emissiveIntensity: 0.7,
                     });
                     var sunObject = new THREE.Mesh(geometry, material);
                     sunObject.position.set(x, y, z);
@@ -106,10 +108,40 @@
                     */
                 }
 
+                function createPlanets(spaceSize){
+                    for (let i = 0; i < 60; i++) {
+                        if(i%4 == 0){
+                            createPlanet(getRandomInt(-spaceSize),getRandomInt(spaceSize),getRandomInt(spaceSize));
+                        }
+                        else if(i%3 == 0){
+                            createPlanet(getRandomInt(spaceSize),getRandomInt(spaceSize),getRandomInt(-spaceSize));
+
+                        }
+                        else if(i%2 == 0){
+                            createPlanet(getRandomInt(spaceSize),getRandomInt(spaceSize),getRandomInt(spaceSize));
+
+                        }else{
+                            createPlanet(getRandomInt(-spaceSize),getRandomInt(-spaceSize),getRandomInt(-spaceSize));
+                        }
+                    }
+                }
+
+                function createPlanet(x, y, z){
+                    var textureArr = ["cactusTexture.jpg", "plutoTexture.jpg", "groundTexture.jpg", "grassTexture.jpg"];
+                    var geometry = new THREE.SphereGeometry(getRandomInt(5), 32, 32);
+                    var material = new THREE.MeshStandardMaterial({
+                        map: new THREE.TextureLoader().load(textureArr[getRandomInt(4)]),
+                        //emissive: 0xff8000,
+                        //emissiveIntensity: 0.7,
+                    });
+                    var sunObject = new THREE.Mesh(geometry, material);
+                    sunObject.position.set(x, y, z);
+                    scene.add( sunObject );
+
+                }
+
                 function animate() {
 	                requestAnimationFrame( animate );
-                    cube.rotation.x += 0.01;
-                    cube.rotation.y += 0.01;
                     controls.update();
                     renderer.render( scene, camera );
                 }
@@ -122,19 +154,32 @@
                 function updateCubePosition(way){
                     switch (way){
                         case 1:
-                            cube2.position.z +=1;
+                            cube2.position.z -=1;
+                            camera.position.z -=1;
+                            //camera.lookAt(cube2.position);
+                            //camera.position.z -=1;
                             break;
                         case 2:
-                            cube2.position.x +=1;
+                            cube2.position.x -=1;
+                            //camera.position.x -=1;
                             break;
                         case 3:
-                            cube2.position.x -=1;
+                            cube2.position.x +=1;
+                            //camera.position.x +=1;
                             break;
                         case 4:
-                            cube2.position.z -=1;
+                            cube2.position.z +=1;
+                            break;
+                        case 5:
+                            cube2.position.y +=1;
+                            break;
+                        case 6:
+                            cube2.position.y -=1;
                             break;
                     }
                     
+                    console.log(cube2.position);
+                    console.log(cube2.position.x, cube2.position.y, cube2.position.z);
                 }
 
                 // Add event listener on keydown
@@ -154,16 +199,20 @@
                         case "KeyS":
                             updateCubePosition(4);
                             break;
+                        case "ArrowUp":
+                            updateCubePosition(5);
+                            break;
+                        case "ArrowDown":
+                            updateCubePosition(6);
+                            break;
                     }
-                    
-                    console.log("button pressed" + name + code);
                 }, false);
 
                 // Add event listener on keyup
                 document.addEventListener('keyup', (event) => {
                     var name = event.key;
                     var code = event.code;
-                    console.log("button uppii" + name + code);
+                    //console.log(code);
                 }, false);
 
                 
